@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Boat Maintenance Planner</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="AI-powered boat maintenance tracking to keep your vessel in top condition">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Stylesheet includes %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    
+    <%# JavaScript includes - with propshaft, these should automatically find the digested filename %>
+    <%= javascript_include_tag "application", defer: true %>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white shadow-lg sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <svg class="h-8 w-8 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            <%= link_to root_path, class: "flex items-center" do %>
+              <span class="text-xl font-bold">Boat Maintenance Planner</span>
+            <% end %>
+          </div>
+          
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button type="button" id="mobile-menu-button" class="text-white hover:text-blue-200 focus:outline-none">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Desktop navigation -->
+          <nav class="hidden md:flex space-x-6 items-center">
+            <% if logged_in? %>
+              <%= link_to "Dashboard", root_path, class: "hover:text-blue-200 transition duration-150" %>
+              <%= link_to "My Boats", boats_path, class: "hover:text-blue-200 transition duration-150" %>
+              <%= link_to "Ask AI", user_prompts_path, class: "hover:text-blue-200 transition duration-150" %>
+              <div class="ml-6 flex items-center border-l border-blue-600 pl-6">
+                <span class="mr-3 text-blue-200"><%= current_user.email %></span>
+                <%= button_to "Logout", logout_path, method: :delete, class: "bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded text-sm font-medium transition duration-150" %>
+              </div>
+            <% else %>
+              <%= link_to "Login", login_path, class: "hover:text-blue-200 transition duration-150" %>
+              <%= link_to "Sign Up", signup_path, class: "bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded font-medium transition duration-150" %>
+            <% end %>
+          </nav>
+        </div>
+        
+        <!-- Mobile navigation (hidden by default) -->
+        <nav id="mobile-menu" class="hidden pt-4 pb-2 border-t border-blue-600 mt-3">
+          <div class="flex flex-col space-y-3">
+            <% if logged_in? %>
+              <%= link_to "Dashboard", root_path, class: "hover:text-blue-200" %>
+              <%= link_to "My Boats", boats_path, class: "hover:text-blue-200" %>
+              <%= link_to "Ask AI", user_prompts_path, class: "hover:text-blue-200" %>
+              <div class="pt-2 border-t border-blue-600">
+                <span class="block text-blue-200 mb-2"><%= current_user.email %></span>
+                <%= button_to "Logout", logout_path, method: :delete, class: "w-full bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded text-sm font-medium" %>
+              </div>
+            <% else %>
+              <%= link_to "Login", login_path, class: "hover:text-blue-200" %>
+              <%= link_to "Sign Up", signup_path, class: "bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded block text-center font-medium mt-2" %>
+            <% end %>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 flex-grow">
+      <% if flash[:notice] %>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md mb-6 animate-fade-in">
+          <div class="flex">
+            <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <%= flash[:notice] %>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if flash[:alert] %>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md mb-6 animate-fade-in">
+          <div class="flex">
+            <svg class="h-6 w-6 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <%= flash[:alert] %>
+          </div>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 mt-8">
+      <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-8">
+          <div>
+            <h3 class="text-xl font-semibold mb-4">Boat Maintenance Planner</h3>
+            <p class="text-gray-300">Keep your vessel in top condition with our AI-powered maintenance platform.</p>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul class="space-y-2">
+              <li><%= link_to "Home", root_path, class: "text-blue-300 hover:text-white transition duration-150" %></li>
+              <li><%= link_to "About", "#", class: "text-blue-300 hover:text-white transition duration-150" %></li>
+              <li><%= link_to "Features", "#features", class: "text-blue-300 hover:text-white transition duration-150" %></li>
+              <li><%= link_to "Contact", "#", class: "text-blue-300 hover:text-white transition duration-150" %></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-blue-300 hover:text-white transition duration-150">
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </a>
+              <a href="#" class="text-blue-300 hover:text-white transition duration-150">
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.1 10.1 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+              </a>
+              <a href="#" class="text-blue-300 hover:text-white transition duration-150">
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 16.892c-2.102.144-6.784.144-8.883 0C5.282 16.736 5.017 15.622 5 12c.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0C18.718 7.264 18.982 8.378 19 12c-.018 3.629-.285 4.736-2.559 4.892zM10 9.658l4.917 2.338L10 14.342V9.658z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+          <p class="text-gray-400">© <%= Date.today.year %> Boat Maintenance Planner | Built with Ruby on Rails</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

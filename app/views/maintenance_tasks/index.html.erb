@@ -1,0 +1,103 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center">
+      <%= link_to boat_path(@boat), class: "text-blue-600 hover:text-blue-800 mr-3" do %>
+        <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-800">
+        Maintenance Tasks for <%= @boat.name %>
+      </h1>
+    </div>
+    <div>
+      <%= link_to "Add Task", new_boat_maintenance_task_path(@boat), class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
+    </div>
+  </div>
+
+  <% if @maintenance_tasks.any? %>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-800 text-white p-4">
+          <h2 class="font-semibold text-lg">Pending Tasks (<%= @pending_tasks.count %>)</h2>
+        </div>
+        <div class="p-4">
+          <% if @pending_tasks.any? %>
+            <div class="space-y-3">
+              <% @pending_tasks.each do |task| %>
+                <%= link_to boat_maintenance_task_path(@boat, task), class: "block p-3 border border-gray-200 rounded-md hover:bg-gray-50" do %>
+                  <div>
+                    <div class="flex justify-between">
+                      <h3 class="font-medium"><%= task.title %></h3>
+                      <% if task.due_date && task.due_date < Date.today %>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Overdue</span>
+                      <% elsif task.due_date %>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Upcoming</span>
+                      <% end %>
+                    </div>
+                    <% if task.system_component %>
+                      <p class="text-xs text-gray-500 mt-1"><%= task.system_component.name %></p>
+                    <% end %>
+                    <% if task.due_date %>
+                      <p class="text-sm <%= task.due_date < Date.today ? 'text-red-600' : 'text-gray-600' %> mt-2">
+                        Due: <%= task.due_date.strftime("%b %d, %Y") %>
+                      </p>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-gray-500 text-center py-4">No pending tasks</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md overflow-hidden md:col-span-2">
+        <div class="bg-green-700 text-white p-4">
+          <h2 class="font-semibold text-lg">Completed Tasks (<%= @completed_tasks.count %>)</h2>
+        </div>
+        <div class="p-4">
+          <% if @completed_tasks.any? %>
+            <div class="space-y-3">
+              <% @completed_tasks.each do |task| %>
+                <%= link_to boat_maintenance_task_path(@boat, task), class: "block p-3 border border-gray-200 rounded-md hover:bg-gray-50" do %>
+                  <div class="flex justify-between">
+                    <div>
+                      <h3 class="font-medium"><%= task.title %></h3>
+                      <% if task.system_component %>
+                        <p class="text-xs text-gray-500"><%= task.system_component.name %></p>
+                      <% end %>
+                      <p class="text-sm text-green-600 mt-2">
+                        Completed: <%= task.completed_at.strftime("%b %d, %Y") %>
+                      </p>
+                    </div>
+                    <div>
+                      <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
+                      <% if task.cost.present? %>
+                        <p class="text-right text-sm font-medium mt-2">$<%= task.cost %></p>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-gray-500 text-center py-4">No completed tasks</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+      <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">No Maintenance Tasks</h3>
+      <p class="text-gray-600 mb-6">Start tracking maintenance for <%= @boat.name %> by adding your first task.</p>
+      <%= link_to "Add Your First Task", new_boat_maintenance_task_path(@boat), class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md" %>
+    </div>
+  <% end %>
+</div>

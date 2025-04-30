@@ -1,0 +1,126 @@
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="flex items-center">
+    <%= link_to boat_maintenance_tasks_path(@boat), class: "text-blue-600 hover:text-blue-800 mr-3" do %>
+      <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    <% end %>
+    <h1 class="text-2xl font-bold text-gray-800"><%= @maintenance_task.title %></h1>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-blue-800 text-white p-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <h2 class="font-semibold text-lg">Task Details</h2>
+        <% if @maintenance_task.completed? %>
+          <span class="ml-3 bg-green-500 text-white text-xs px-2 py-1 rounded">Completed</span>
+        <% elsif @maintenance_task.due_date && @maintenance_task.due_date < Date.today %>
+          <span class="ml-3 bg-red-500 text-white text-xs px-2 py-1 rounded">Overdue</span>
+        <% elsif @maintenance_task.due_date %>
+          <span class="ml-3 bg-blue-500 text-white text-xs px-2 py-1 rounded">Upcoming</span>
+        <% end %>
+      </div>
+      <div class="flex space-x-2">
+        <%= link_to "Edit", edit_boat_maintenance_task_path(@boat, @maintenance_task), class: "bg-white text-blue-800 hover:bg-blue-50 text-sm font-semibold px-3 py-1 rounded" %>
+        <%= button_to "Delete", boat_maintenance_task_path(@boat, @maintenance_task), method: :delete, data: { confirm: "Are you sure you want to delete this task?" }, class: "bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-3 py-1 rounded" %>
+      </div>
+    </div>
+    
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">System</h3>
+              <p class="mt-1 text-gray-900"><%= @maintenance_task.system_component&.name || "Not specified" %></p>
+            </div>
+            
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Due Date</h3>
+              <p class="mt-1 text-gray-900"><%= @maintenance_task.due_date&.strftime("%B %d, %Y") || "Not specified" %></p>
+            </div>
+            
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Engine Hours</h3>
+              <p class="mt-1 text-gray-900"><%= @maintenance_task.engine_hours || "Not specified" %></p>
+            </div>
+            
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Cost</h3>
+              <p class="mt-1 text-gray-900"><%= number_to_currency(@maintenance_task.cost) if @maintenance_task.cost.present? %></p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Status</h3>
+              <% if @maintenance_task.completed? %>
+                <p class="mt-1 text-green-600">Completed on <%= @maintenance_task.completed_at.strftime("%B %d, %Y") %></p>
+              <% elsif @maintenance_task.due_date && @maintenance_task.due_date < Date.today %>
+                <p class="mt-1 text-red-600">Overdue by <%= time_ago_in_words(@maintenance_task.due_date) %></p>
+              <% elsif @maintenance_task.due_date %>
+                <p class="mt-1 text-blue-600">Upcoming in <%= time_ago_in_words(@maintenance_task.due_date) %></p>
+              <% else %>
+                <p class="mt-1 text-gray-600">No due date specified</p>
+              <% end %>
+            </div>
+            
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Boat</h3>
+              <p class="mt-1 text-gray-900"><%= link_to @boat.name, boat_path(@boat), class: "text-blue-600 hover:text-blue-800" %></p>
+            </div>
+            
+            <% if @maintenance_task.completed? %>
+              <div class="pt-2">
+                <%= button_to "Mark as Incomplete", uncomplete_boat_maintenance_task_path(@boat, @maintenance_task), method: :patch, class: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 text-sm font-medium px-4 py-2 rounded-md" %>
+              </div>
+            <% else %>
+              <div class="pt-2">
+                <%= button_to "Mark as Complete", complete_boat_maintenance_task_path(@boat, @maintenance_task), method: :patch, class: "bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <% if @maintenance_task.description.present? || @maintenance_task.notes.present? %>
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <% if @maintenance_task.description.present? %>
+            <div class="mb-6">
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide mb-2">Description</h3>
+              <div class="prose max-w-none text-gray-700">
+                <%= simple_format(@maintenance_task.description) %>
+              </div>
+            </div>
+          <% end %>
+          
+          <% if @maintenance_task.notes.present? %>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide mb-2">Notes</h3>
+              <div class="prose max-w-none text-gray-700">
+                <%= simple_format(@maintenance_task.notes) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @maintenance_task.photo.attached? %>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="bg-blue-800 text-white p-4">
+        <h2 class="font-semibold text-lg">Photos</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <%= image_tag @maintenance_task.photo, class: "w-full rounded-lg" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

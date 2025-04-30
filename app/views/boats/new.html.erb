@@ -1,0 +1,14 @@
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center mb-6">
+    <%= link_to boats_path, class: "text-blue-600 hover:text-blue-800 mr-3" do %>
+      <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    <% end %>
+    <h1 class="text-2xl font-bold text-gray-800">Add New Boat</h1>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <%= render 'form', boat: @boat %>
+  </div>
+</div>

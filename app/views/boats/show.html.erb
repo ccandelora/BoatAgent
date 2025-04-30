@@ -1,0 +1,227 @@
+<div class="space-y-8">
+  <div class="flex justify-between items-center">
+    <div class="flex items-center">
+      <%= link_to boats_path, class: "text-blue-600 hover:text-blue-800 mr-3" do %>
+        <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-gray-800"><%= @boat.name %></h1>
+    </div>
+    <div class="flex space-x-2">
+      <%= link_to "Edit", edit_boat_path(@boat), class: "border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded" %>
+      <%= button_to "Delete", boat_path(@boat), method: :delete, data: { confirm: "Are you sure you want to delete this boat?" }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" %>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2 space-y-6">
+      <!-- Boat Details Card -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-800 text-white p-4">
+          <h2 class="font-semibold text-lg">Boat Details</h2>
+        </div>
+        <div class="p-6">
+          <div class="grid md:grid-cols-2 gap-y-4 gap-x-8">
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Make</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.make %></p>
+            </div>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Model</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.model %></p>
+            </div>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Year</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.year %></p>
+            </div>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Engine</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.engine_type || "Not specified" %></p>
+            </div>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Location</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.location || "Not specified" %></p>
+            </div>
+            <div>
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Engine Hours</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.hours || "Not specified" %></p>
+            </div>
+          </div>
+          <% if @boat.description.present? %>
+            <div class="mt-6">
+              <h3 class="text-sm text-gray-500 uppercase tracking-wide">Description</h3>
+              <p class="mt-1 text-gray-900"><%= @boat.description %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Maintenance Tasks Section -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-800 text-white p-4 flex justify-between items-center">
+          <h2 class="font-semibold text-lg">Maintenance Tasks</h2>
+          <%= link_to "Add Task", new_boat_maintenance_task_path(@boat), class: "bg-white text-blue-800 hover:bg-blue-50 text-sm font-semibold px-3 py-1 rounded" %>
+        </div>
+        <div class="p-6">
+          <% if @maintenance_tasks && @maintenance_tasks.any? %>
+            <div class="space-y-4">
+              <% if @overdue_tasks && @overdue_tasks.any? %>
+                <div class="pb-4 border-b border-gray-200">
+                  <h3 class="font-medium text-red-600 mb-2">Overdue</h3>
+                  <div class="space-y-2">
+                    <% @overdue_tasks.each do |task| %>
+                      <%= link_to boat_maintenance_task_path(@boat, task), class: "block p-3 border border-red-200 rounded-md hover:bg-red-50" do %>
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <span class="font-medium"><%= task.title %></span>
+                            <% if task.system_component %>
+                              <span class="text-xs text-gray-500 ml-2"><%= task.system_component.name %></span>
+                            <% end %>
+                            <% if task.due_date %>
+                              <p class="text-sm text-red-600 mt-1">Due <%= time_ago_in_words(task.due_date) %> ago</p>
+                            <% end %>
+                          </div>
+                          <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Overdue</span>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+
+              <% if @upcoming_tasks && @upcoming_tasks.any? %>
+                <div class="pb-4 border-b border-gray-200">
+                  <h3 class="font-medium text-blue-600 mb-2">Upcoming</h3>
+                  <div class="space-y-2">
+                    <% @upcoming_tasks.each do |task| %>
+                      <%= link_to boat_maintenance_task_path(@boat, task), class: "block p-3 border border-blue-200 rounded-md hover:bg-blue-50" do %>
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <span class="font-medium"><%= task.title %></span>
+                            <% if task.system_component %>
+                              <span class="text-xs text-gray-500 ml-2"><%= task.system_component.name %></span>
+                            <% end %>
+                            <% if task.due_date %>
+                              <p class="text-sm text-gray-600 mt-1">Due <%= task.due_date.strftime("%b %d, %Y") %></p>
+                            <% end %>
+                          </div>
+                          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Upcoming</span>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+
+              <div>
+                <h3 class="font-medium text-gray-600 mb-2">All Tasks</h3>
+                <div class="space-y-2">
+                  <% @maintenance_tasks.limit(5).each do |task| %>
+                    <%= link_to boat_maintenance_task_path(@boat, task), class: "block p-3 border border-gray-200 rounded-md hover:bg-gray-50" do %>
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <span class="font-medium"><%= task.title %></span>
+                          <% if task.system_component %>
+                            <span class="text-xs text-gray-500 ml-2"><%= task.system_component.name %></span>
+                          <% end %>
+                          <% if task.completed? %>
+                            <p class="text-sm text-green-600 mt-1">Completed <%= time_ago_in_words(task.completed_at) %> ago</p>
+                          <% elsif task.due_date %>
+                            <p class="text-sm text-gray-600 mt-1">Due <%= task.due_date.strftime("%b %d, %Y") %></p>
+                          <% end %>
+                        </div>
+                        <% if task.completed? %>
+                          <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
+                        <% elsif task.due_date && task.due_date < Date.today %>
+                          <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Overdue</span>
+                        <% elsif task.due_date %>
+                          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Upcoming</span>
+                        <% else %>
+                          <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">No Due Date</span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+                <% if @maintenance_tasks.count > 5 %>
+                  <div class="text-center mt-4">
+                    <%= link_to "View All Tasks", boat_maintenance_tasks_path(@boat), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <div class="text-center py-6">
+              <div class="w-12 h-12 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-gray-800 mb-1">No Maintenance Tasks</h3>
+              <p class="text-gray-500 mb-4">Start tracking maintenance by adding your first task.</p>
+              <%= link_to "Add Task", new_boat_maintenance_task_path(@boat), class: "bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-blue-800 text-white p-4">
+          <h2 class="font-semibold text-lg">Quick Actions</h2>
+        </div>
+        <div class="p-4">
+          <div class="grid gap-3">
+            <%= link_to new_boat_maintenance_task_path(@boat), class: "flex items-center p-3 border border-gray-200 rounded-md hover:bg-blue-50" do %>
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </div>
+              <span class="font-medium">Log Maintenance</span>
+            <% end %>
+            
+            <%= link_to boat_maintenance_tasks_path(@boat), class: "flex items-center p-3 border border-gray-200 rounded-md hover:bg-blue-50" do %>
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <span class="font-medium">View All Tasks</span>
+            <% end %>
+            
+            <%= link_to boat_ai_recommendations_path(@boat), class: "flex items-center p-3 border border-gray-200 rounded-md hover:bg-purple-50" do %>
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <span class="font-medium">AI Recommendations</span>
+            <% end %>
+            
+            <%= link_to boat_ai_recommendations_path(@boat, generate: true), class: "flex items-center p-3 border border-gray-200 rounded-md hover:bg-purple-50" do %>
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+              </div>
+              <span class="font-medium">Generate New AI Suggestions</span>
+            <% end %>
+            
+            <%= link_to user_prompts_path, class: "flex items-center p-3 border border-gray-200 rounded-md hover:bg-green-50" do %>
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                </svg>
+              </div>
+              <span class="font-medium">Ask AI About Maintenance</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

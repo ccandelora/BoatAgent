@@ -1,0 +1,68 @@
+<%= form_with(model: boat, class: "space-y-6") do |f| %>
+  <% if boat.errors.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 mb-4">
+      <h2 class="text-lg font-semibold"><%= pluralize(boat.errors.count, "error") %> prevented this boat from being saved:</h2>
+      <ul class="list-disc pl-5 mt-2">
+        <% boat.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="space-y-6">
+      <div>
+        <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :name, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :make, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :make, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :model, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :model, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :year, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.number_field :year, min: 1900, max: Date.today.year + 1, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", required: true %>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div>
+        <%= f.label :engine_type, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :engine_type, placeholder: "e.g., Yamaha 150HP Outboard", class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :location, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :location, placeholder: "e.g., Boston Harbor", class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :hours, "Engine Hours", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.number_field :hours, min: 0, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        <p class="text-xs text-gray-500 mt-1">Current running hours on the engine</p>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :description, rows: 4, placeholder: "Additional information about your boat...", class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+  </div>
+
+  <div class="pt-4 flex justify-end space-x-3">
+    <% if boat.persisted? %>
+      <%= link_to "Cancel", boat_path(boat), class: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium" %>
+    <% else %>
+      <%= link_to "Cancel", boats_path, class: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium" %>
+    <% end %>
+    <%= f.submit boat.persisted? ? "Update Boat" : "Create Boat", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium" %>
+  </div>
+<% end %> 

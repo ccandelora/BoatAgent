@@ -1,0 +1,13 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-gray-900">Edit System Component</h1>
+    <div>
+      <%= link_to 'Show', @system_component, class: "mr-4 text-indigo-600 hover:text-indigo-800" %>
+      <%= link_to 'Back to Components', system_components_path, class: "text-indigo-600 hover:text-indigo-800" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+    <%= render 'form', system_component: @system_component %>
+  </div>
+</div>

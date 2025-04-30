@@ -1,0 +1,68 @@
+<%= form_with(model: system_component, local: true) do |form| %>
+  <% if system_component.errors.any? %>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      <h2 class="font-semibold mb-2"><%= pluralize(system_component.errors.count, "error") %> prohibited this component from being saved:</h2>
+      <ul class="list-disc pl-5">
+        <% system_component.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="mb-4">
+      <%= form.label :name, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :name, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :serial_number, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :serial_number, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :manufacturer, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :manufacturer, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :model, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :model, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :capacity, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :capacity, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :installation_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.date_field :installation_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :last_service_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.date_field :last_service_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :next_service_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.date_field :next_service_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :notes, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.text_area :notes, rows: 4, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+    <% if system_component.persisted? %>
+      <%= link_to "Cancel", system_component_path(system_component), class: "inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" %>
+    <% else %>
+      <%= link_to "Cancel", system_components_path, class: "inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" %>
+    <% end %>
+  </div>
+<% end %> 

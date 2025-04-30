@@ -1,0 +1,98 @@
+<div class="max-w-3xl mx-auto p-6">
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <%= form_with(model: system_component, local: true, class: "space-y-6") do |form| %>
+      <% if system_component.errors.any? %>
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                <%= pluralize(system_component.errors.count, "error") %> prohibited this component from being saved:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  <% system_component.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="col-span-2">
+          <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :name, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :component_type, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :component_type, 
+              [
+                ['Engine', 'engine'], 
+                ['Generator', 'generator'],
+                ['Electronics', 'electronics'],
+                ['Plumbing', 'plumbing'],
+                ['Electrical', 'electrical'],
+                ['HVAC', 'hvac'],
+                ['Safety', 'safety'],
+                ['Other', 'other']
+              ], 
+              { include_blank: 'Select component type' }, 
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" 
+          %>
+        </div>
+
+        <div>
+          <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :status, 
+              [['Active', 'active'], ['Inactive', 'inactive'], ['Maintenance', 'maintenance']], 
+              { include_blank: 'Select status' }, 
+              class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" 
+          %>
+        </div>
+
+        <div>
+          <%= form.label :year, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.number_field :year, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :manufacturer, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :manufacturer, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :model, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :model, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :serial_number, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :serial_number, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+        
+        <div class="col-span-2">
+          <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_area :description, rows: 4, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="col-span-2">
+          <%= form.label :notes, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_area :notes, rows: 4, class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-5">
+        <%= link_to 'Cancel', system_components_path, class: "mr-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+        <%= form.submit class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+    <% end %>
+  </div>
+</div> 

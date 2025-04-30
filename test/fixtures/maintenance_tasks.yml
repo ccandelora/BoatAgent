@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  completed_at: 2025-04-29 18:55:38
+  due_date: 2025-04-29
+  cost: 9.99
+  engine_hours: 1
+  notes: MyText
+  boat: one
+  system_component: one
+
+two:
+  title: MyString
+  description: MyText
+  completed_at: 2025-04-29 18:55:38
+  due_date: 2025-04-29
+  cost: 9.99
+  engine_hours: 1
+  notes: MyText
+  boat: two
+  system_component: two

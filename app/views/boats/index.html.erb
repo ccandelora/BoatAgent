@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">Your Boats</h1>
+    <div>
+      <%= link_to "Add New Boat", new_boat_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
+    </div>
+  </div>
+  
+  <% if @boats.any? %>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @boats.each do |boat| %>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
+          <div class="bg-blue-800 text-white p-4">
+            <h2 class="text-xl font-semibold"><%= boat.name %></h2>
+            <p class="text-blue-200 text-sm"><%= boat.year %> <%= boat.make %> <%= boat.model %></p>
+          </div>
+          
+          <div class="p-4">
+            <div class="space-y-3">
+              <% if boat.engine_type.present? %>
+                <div class="flex items-start">
+                  <svg class="h-5 w-5 text-gray-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  <div>
+                    <span class="text-sm font-medium text-gray-500">Engine:</span>
+                    <span class="text-sm text-gray-700 ml-1"><%= boat.engine_type %></span>
+                  </div>
+                </div>
+              <% end %>
+              
+              <% if boat.hours.present? %>
+                <div class="flex items-start">
+                  <svg class="h-5 w-5 text-gray-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <span class="text-sm font-medium text-gray-500">Hours:</span>
+                    <span class="text-sm text-gray-700 ml-1"><%= boat.hours %></span>
+                  </div>
+                </div>
+              <% end %>
+              
+              <% if boat.location.present? %>
+                <div class="flex items-start">
+                  <svg class="h-5 w-5 text-gray-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <div>
+                    <span class="text-sm font-medium text-gray-500">Location:</span>
+                    <span class="text-sm text-gray-700 ml-1"><%= boat.location %></span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="flex justify-between mt-6">
+              <%= link_to boat_path(boat), class: "text-blue-600 hover:text-blue-800 font-medium text-sm" do %>
+                View Details
+                <svg class="h-4 w-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              <% end %>
+              
+              <div class="space-x-1">
+                <%= link_to boat_maintenance_tasks_path(boat), class: "text-gray-600 hover:text-gray-800 text-sm" do %>
+                  Maintenance
+                <% end %>
+                <%= link_to boat_ai_recommendations_path(boat), class: "text-purple-600 hover:text-purple-800 text-sm" do %>
+                  AI Recommendations
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+      <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">No Boats Yet</h3>
+      <p class="text-gray-600 mb-6">Start by adding your first boat to begin tracking maintenance.</p>
+      <%= link_to "Add Your First Boat", new_boat_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md" %>
+    </div>
+  <% end %>
+</div>

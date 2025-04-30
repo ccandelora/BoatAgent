@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+RBENV_GEM="$HOME/.rbenv/shims/gem"
+
+if $RBENV_GEM list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
+  $RBENV_GEM install foreman
+fi
+
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
+
+export PATH="$HOME/.rbenv/shims:$PATH"
+exec foreman start -f Procfile.dev --env /dev/null "$@"
