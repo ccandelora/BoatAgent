@@ -2,8 +2,15 @@ class OpenaiService
   attr_reader :client
 
   def initialize
-    api_key = Rails.application.credentials.dig(:openai, :api_key) || ENV["OPENAI_API_KEY"] || "demo_key"
-    @client = OpenAI::Client.new(access_token: api_key)
+    api_key = Rails.application.credentials.dig(:openai, :api_key) || ENV["OPENAI_API_KEY"]
+
+    if api_key.present? && api_key.start_with?("sk-")
+      @client = OpenAI::Client.new(access_token: api_key)
+      Rails.logger.info "OpenAI client initialized with valid API key"
+    else
+      Rails.logger.warn "No valid OpenAI API key found (got: #{api_key.present? ? "Invalid format" : "No key"}). Using mock responses."
+      @client = nil
+    end
   end
 
   def chat(prompt, system_message = nil)
@@ -56,8 +63,12 @@ class OpenaiService
       - System component (engine, hull, electrical, plumbing, rigging, etc.)
     PROMPT
 
+    Rails.logger.info "Generating recommendations for boat: #{boat.name} (using #{mock_mode? ? 'mock' : 'API'} mode)"
     response = chat(prompt, system_message)
-    parse_maintenance_recommendations(response, boat)
+    recommendations = parse_maintenance_recommendations(response, boat)
+    Rails.logger.info "Generated #{recommendations.size} recommendations"
+
+    recommendations
   end
 
   private
@@ -84,8 +95,11 @@ class OpenaiService
 
       next if title.blank?
 
-      # Find or create the system component
-      system_component = SystemComponent.find_or_create_by(name: component_name) if component_name.present?
+      # Ensure we have a component name, default to "General" if missing
+      component_name = "General" if component_name.blank?
+
+      # Find or create the system component - always create one if not found
+      system_component = SystemComponent.find_or_create_by!(name: component_name)
 
       # Parse the suggested date
       begin
@@ -113,11 +127,15 @@ class OpenaiService
   end
 
   def mock_mode?
-    Rails.application.credentials.dig(:openai, :api_key).blank? && ENV["OPENAI_API_KEY"].blank?
+    @client.nil?
   end
 
   def mock_response(prompt)
-    if prompt.downcase.include?("oil change")
+    if prompt.include?("suggest 3-5 maintenance tasks")
+      # This is a request for maintenance recommendations
+      boat_details = prompt.split("\n").first(7)
+      generate_mock_maintenance_recommendations(boat_details)
+    elsif prompt.downcase.include?("oil change")
       "You should change your boat's engine oil every 100 hours or annually, whichever comes first. Make sure to use marine-grade oil appropriate for your engine type."
     elsif prompt.downcase.include?("winterize")
       "Winterizing your boat involves several key steps: draining water systems, adding antifreeze, stabilizing fuel, changing oil, removing the battery, and covering the boat properly. This should be done before temperatures reach freezing."
@@ -126,5 +144,57 @@ class OpenaiService
     else
       "As a boat maintenance assistant, I recommend establishing a regular maintenance schedule for your vessel. This includes hull cleaning, engine servicing, electrical system checks, and safety equipment inspections. Regular maintenance extends your boat's life and ensures safety on the water."
     end
+  end
+
+  def generate_mock_maintenance_recommendations(boat_details)
+    # Extract boat make/model for more specific recommendations
+    boat_info = {}
+    boat_details.each do |line|
+      key, value = line.split(":", 2)
+      boat_info[key.strip] = value&.strip
+    end
+
+    engine_type = boat_info["Engine Type"] || "Unknown"
+    is_outboard = engine_type.downcase.include?("outboard")
+
+    recommendations = []
+
+    # Task 1
+    recommendations << <<~TASK
+      Title: Engine Oil Change
+      Description: Regular oil changes are crucial for marine engines. Replace the oil and oil filter according to manufacturer recommendations.
+      Task Type: Routine
+      Suggested date: #{(Date.today + 2.weeks).strftime("%B %d, %Y")}
+      System component: Engine
+    TASK
+
+    # Task 2
+    recommendations << <<~TASK
+      Title: #{is_outboard ? "Lower Unit Lubrication" : "Transmission Fluid Check"}
+      Description: #{is_outboard ? "Drain and replace the lower unit gear oil to ensure proper lubrication and prevent corrosion." : "Check transmission fluid levels and condition. Replace if discolored or contaminated."}
+      Task Type: Preventive
+      Suggested date: #{(Date.today + 1.month).strftime("%B %d, %Y")}
+      System component: #{is_outboard ? "Propulsion" : "Transmission"}
+    TASK
+
+    # Task 3
+    recommendations << <<~TASK
+      Title: Battery Inspection and Service
+      Description: Clean battery terminals, check water levels in cells (if applicable), and test battery capacity. Replace if showing signs of weakness.
+      Task Type: Routine
+      Suggested date: #{(Date.today + 3.weeks).strftime("%B %d, %Y")}
+      System component: Electrical
+    TASK
+
+    # Task 4
+    recommendations << <<~TASK
+      Title: Hull Cleaning and Waxing
+      Description: Remove marine growth, clean the hull, and apply a protective wax coating to prevent UV damage and water absorption.
+      Task Type: Seasonal
+      Suggested date: #{(Date.today + 1.month + 1.week).strftime("%B %d, %Y")}
+      System component: Hull
+    TASK
+
+    recommendations.join("\n\n")
   end
 end
