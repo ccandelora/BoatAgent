@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: boat-agent
+    env: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: boat-agent-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: true
+    healthCheckPath: /health
+
+databases:
+  - name: boat-agent-db
+    databaseName: boat_agent
+    user: boat_agent 
